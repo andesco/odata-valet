@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OData Valet URL Builder</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+  <style>
+    .currency-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+    }
+    .currency-grid label {
+      font-weight: normal;
+      margin: 0 0 1rem 0;
+    }
+    .currency-grid input:checked + span {
+      font-weight: bold;
+    }
+    .period-options {
+      margin-left: 2rem;
+      margin-top: 0.5rem;
+    }
+    fieldset {
+      margin-top: 1.25rem;
+    }
+    fieldset legend {
+      font-size: 1.25rem;
+      font-weight: bold;
+    }
+    input[type="date"] {
+      width: auto;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>OData Valet</h1>
+    <h4>Bank of Canada Exchange Rate Data for Excel</h4>
+    
+    <small>
+      source code: <a href="https://github.com/andesco/odata-valet">andesco/odata-valet</a><br />
+      source data: <a href="https://www.bankofcanada.ca">Bank of Canada</a> &middot; <a href="https://www.bankofcanada.ca/valet/docs">Valet API</a>
+    </small>
+
+    <form id="urlBuilder">
+      <fieldset>
+        <legend>Currencies</legend>
+        <div class="currency-grid">
+          <label><input type="checkbox" name="currency" value="AUD"> <span>AUD</span></label>
+          <label><input type="checkbox" name="currency" value="BRL"> <span>BRL</span></label>
+          <label><input type="checkbox" name="currency" value="CAD"> <span>CAD</span></label>
+          <label><input type="checkbox" name="currency" value="CHF"> <span>CHF</span></label>
+          <label><input type="checkbox" name="currency" value="CNY"> <span>CNY</span></label>
+          <label><input type="checkbox" name="currency" value="EUR" checked> <span>EUR</span></label>
+          <label><input type="checkbox" name="currency" value="GBP" checked> <span>GBP</span></label>
+          <label><input type="checkbox" name="currency" value="HKD"> <span>HKD</span></label>
+          <label><input type="checkbox" name="currency" value="IDR"> <span>IDR</span></label>
+          <label><input type="checkbox" name="currency" value="INR"> <span>INR</span></label>
+          <label><input type="checkbox" name="currency" value="JPY"> <span>JPY</span></label>
+          <label><input type="checkbox" name="currency" value="KRW"> <span>KRW</span></label>
+          <label><input type="checkbox" name="currency" value="MXN"> <span>MXN</span></label>
+          <label><input type="checkbox" name="currency" value="MYR"> <span>MYR</span></label>
+          <label><input type="checkbox" name="currency" value="NOK"> <span>NOK</span></label>
+          <label><input type="checkbox" name="currency" value="NZD"> <span>NZD</span></label>
+          <label><input type="checkbox" name="currency" value="PEN"> <span>PEN</span></label>
+          <label><input type="checkbox" name="currency" value="RUB"> <span>RUB</span></label>
+          <label><input type="checkbox" name="currency" value="SAR"> <span>SAR</span></label>
+          <label><input type="checkbox" name="currency" value="SEK"> <span>SEK</span></label>
+          <label><input type="checkbox" name="currency" value="SGD"> <span>SGD</span></label>
+          <label><input type="checkbox" name="currency" value="THB"> <span>THB</span></label>
+          <label><input type="checkbox" name="currency" value="TRY"> <span>TRY</span></label>
+          <label><input type="checkbox" name="currency" value="TWD"> <span>TWD</span></label>
+          <label><input type="checkbox" name="currency" value="USD" checked> <span>USD</span></label>
+          <label><input type="checkbox" name="currency" value="VND"> <span>VND</span></label>
+          <label><input type="checkbox" name="currency" value="ZAR"> <span>ZAR</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Period</legend>
+        <label style="display: flex; align-items: baseline; gap: 0.5rem;">
+          <input type="radio" name="periodType" value="years"> Number of Years
+          <input type="number" id="yearsCount" value="1" min="1" max="10" style="width: 100px;">
+        </label>
+
+        <label style="display: flex; align-items: baseline; gap: 0.5rem;">
+          <input type="radio" name="periodType" value="months"> Number of Months
+          <input type="number" id="monthsCount" value="6" min="1" max="120" style="width: 100px; display: none;">
+        </label>
+
+        <label style="display: flex; align-items: baseline; gap: 0.5rem;">
+          <input type="radio" name="periodType" value="weeks"> Number of Weeks
+          <input type="number" id="weeksCount" value="4" min="1" max="520" style="width: 100px; display: none;">
+        </label>
+
+        <div>
+          <label>
+            <input type="radio" name="periodType" value="dateRange" checked> Start &amp; End Dates
+          </label>
+          <div id="dateRangeOptions" style="margin-left: 2rem; margin-top: 0.5rem;">
+            <input type="date" id="startDate">
+            <input type="date" id="endDate" style="margin-left: 0.5rem;">
+          </div>
+        </div>
+
+        <label style="margin-top: 1rem;">
+          <input type="checkbox" id="includePadding" checked>
+          include preceding 7 days &middot; recommended for <code>XLOOKUP</code>
+        </label>
+      </fieldset>
+
+      <article id="urlOutput">
+        <header>Your custom OData feed URL:</header>
+        <code id="generatedUrl"></code>
+        <footer>
+          <button type="button" id="copyBtn">Copy URL</button>
+        </footer>
+      </article>
+    </form>
+
+      <h5>How to use in Excel</h5>
+      <ol>
+        <li>Select: Get Data &rarr; OData</li>
+        <li>Paste your custom URL.</li>
+        <li>Select: Close and load</li>
+        <li>Use <code>XLOOKUP</code> to find rates by date:</li>
+      </ol>
+      <details open>
+      <p><summary><code>=XLOOKUP(A2, Query[Date], Query[USD_CAD], 0.0000, -1)</code></summary></p>
+      <ul>
+        <li>date cell: <code>A2</code> <small><strong>OR</strong></small> <code>INDEX(A:A,ROW())</code></li>
+        <li>imported table name: <code>Query</code></li>
+        <li>date column: <code>[Date]</code></li>
+        <li>exchange rate column: <code>[USD_CAD]</code></li>
+        <li>returned value when no match found: <code>0.0000</code></li>
+        <li>find previous business day: <code>-1</code></li>
+      </ul>
+      </details>
+  </main>
+  <script>
+    const form = document.getElementById('urlBuilder');
+    const urlDisplay = document.getElementById('generatedUrl');
+    const copyBtn = document.getElementById('copyBtn');
+    const yearsCount = document.getElementById('yearsCount');
+    const monthsCount = document.getElementById('monthsCount');
+    const weeksCount = document.getElementById('weeksCount');
+    const dateRangeOptions = document.getElementById('dateRangeOptions');
+
+    // Toggle period type visibility
+    function updatePeriodVisibility() {
+      const periodType = document.querySelector('input[name="periodType"]:checked').value;
+
+      yearsCount.style.display = 'none';
+      monthsCount.style.display = 'none';
+      weeksCount.style.display = 'none';
+      dateRangeOptions.style.display = 'none';
+
+      if (periodType === 'years') {
+        yearsCount.style.display = 'inline-block';
+      } else if (periodType === 'months') {
+        monthsCount.style.display = 'inline-block';
+      } else if (periodType === 'weeks') {
+        weeksCount.style.display = 'inline-block';
+      } else if (periodType === 'dateRange') {
+        dateRangeOptions.style.display = 'block';
+      }
+    }
+
+    document.querySelectorAll('input[name="periodType"]').forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        updatePeriodVisibility();
+        updateUrl();
+      });
+    });
+
+    // Update URL on any input change
+    form.addEventListener('change', updateUrl);
+    form.addEventListener('input', updateUrl);
+
+    function updateUrl() {
+      const currencies = Array.from(document.querySelectorAll('input[name="currency"]:checked'))
+        .map(cb => cb.value)
+        .join(',');
+
+      if (!currencies) {
+        urlDisplay.textContent = 'Please select at least one currency';
+        return;
+      }
+
+      const periodType = document.querySelector('input[name="periodType"]:checked').value;
+      let params = `currencies=${currencies}`;
+
+      if (periodType === 'years') {
+        const count = document.getElementById('yearsCount').value;
+        params += `&years=${count}`;
+      } else if (periodType === 'months') {
+        const count = document.getElementById('monthsCount').value;
+        params += `&months=${count}`;
+      } else if (periodType === 'weeks') {
+        const count = document.getElementById('weeksCount').value;
+        params += `&weeks=${count}`;
+      } else if (periodType === 'dateRange') {
+        const start = document.getElementById('startDate').value;
+        const end = document.getElementById('endDate').value;
+        if (start && end) {
+          params += `&start=${start}&end=${end}`;
+        } else {
+          urlDisplay.textContent = 'Please select start and end dates';
+          return;
+        }
+      }
+
+      // Add padding parameter if disabled (enabled by default)
+      if (!document.getElementById('includePadding').checked) {
+        params += '&padding=false';
+      }
+
+      urlDisplay.textContent = `${window.location.origin}/ExchangeRates?${params}`;
+    }
+
+    // Copy to clipboard
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(urlDisplay.textContent);
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => copyBtn.textContent = 'Copy URL', 2000);
+      } catch (err) {
+        alert('Failed to copy URL');
+      }
+    });
+
+    // Set default dates to current year
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    document.getElementById('startDate').value = `${currentYear}-01-01`;
+    document.getElementById('endDate').value = `${currentYear}-12-31`;
+
+    // Initialize
+    updatePeriodVisibility();
+    updateUrl();
+  </script>
+</body>
+</html>

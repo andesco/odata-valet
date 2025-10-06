@@ -1,0 +1,15 @@
+# public deployment
+name = "odata-valet"
+main = "exchange-rate-worker.js"
+compatibility_date = "2024-01-01"
+account_id = ""
+
+# [[routes]]
+# pattern = "odatavalet.andrewe.ca"
+# custom_domain = true
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
+# deploy with: npx wrangler deploy

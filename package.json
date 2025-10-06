@@ -1,0 +1,23 @@
+{
+  "name": "odata-valet",
+  "version": "1.0.0",
+  "description": "OData Valet: Bank of Canada Exchange Rates in Excel",
+  "main": "exchange-rate-worker.js",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "deploy:local": "wrangler deploy --config wrangler.local.toml"
+  },
+  "keywords": [
+    "odata",
+    "bank-of-canada",
+    "valet-api",
+    "exchange-rates",
+    "cloudflare-workers",
+    "excel"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}

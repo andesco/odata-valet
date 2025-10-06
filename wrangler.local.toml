@@ -1,0 +1,16 @@
+# private deployment
+name = "odata-valet"
+main = "exchange-rate-worker.js"
+compatibility_date = "2024-01-01"
+account_id = "0a15c5f9d39350baa992ff9f48efc1c8" # wrangler.toml: empty; never add private account_id
+
+[[routes]] # wrangler.toml: comment-out all
+pattern = "odatavalet.andrewe.ca"
+custom_domain = true
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
+# deploy with: npm run deploy:local
+
