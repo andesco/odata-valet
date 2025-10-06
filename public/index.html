@@ -107,8 +107,8 @@
         </div>
 
         <label style="margin-top: 1rem;">
-          <input type="checkbox" id="includePadding" checked>
-          include preceding 7 days &middot; recommended for <code>XLOOKUP</code>
+          <input type="checkbox" id="strictMode">
+          strict mode &middot; disable 5-day padding
         </label>
       </fieldset>
 
@@ -117,16 +117,17 @@
         <code id="generatedUrl"></code>
         <footer>
           <button type="button" id="copyBtn">Copy URL</button>
+          <a id="viewOdataLink" href="" target="_blank" role="button" class="secondary" style="margin-left: 1rem;">View XML</a>
         </footer>
       </article>
     </form>
 
       <h5>How to use in Excel</h5>
       <ol>
-        <li>Select: Get Data &rarr; OData</li>
-        <li>Paste your custom URL.</li>
-        <li>Select: Close and load</li>
-        <li>Use <code>XLOOKUP</code> to find rates by date:</li>
+        <li>select: Get Data &rarr; OData</li>
+        <li>paste your URL</li>
+        <li>select: Close and load</li>
+        <li>use <code>XLOOKUP</code> to find rates by date:</li>
       </ol>
       <details open>
       <p><summary><code>=XLOOKUP(A2, Query[Date], Query[USD_CAD], 0.0000, -1)</code></summary></p>
@@ -191,7 +192,7 @@
       }
 
       const periodType = document.querySelector('input[name="periodType"]:checked').value;
-      let params = `currencies=${currencies}`;
+      let params = `fx=${currencies}`;
 
       if (periodType === 'years') {
         const count = document.getElementById('yearsCount').value;
@@ -213,12 +214,17 @@
         }
       }
 
-      // Add padding parameter if disabled (enabled by default)
-      if (!document.getElementById('includePadding').checked) {
-        params += '&padding=false';
+      // Add strict flag if enabled (padding is default)
+      if (document.getElementById('strictMode').checked) {
+        params += '&strict';
       }
 
-      urlDisplay.textContent = `${window.location.origin}/ExchangeRates?${params}`;
+      const baseUrl = `${window.location.origin}/ExchangeRates?${params}`;
+      urlDisplay.textContent = baseUrl;
+
+      // Update View XML link with &raw parameter
+      const viewLink = document.getElementById('viewOdataLink');
+      viewLink.href = baseUrl + '&raw';
     }
 
     // Copy to clipboard

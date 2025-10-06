@@ -50,7 +50,7 @@ export default {
     // Handle metadata request
     if (url.pathname === '/$metadata') {
       // Extract currencies from query string to generate dynamic metadata
-      const qsCurrencies = url.searchParams.get('currencies');
+      const qsCurrencies = url.searchParams.get('fx');
 
       let currencyColumns = '';
       if (qsCurrencies) {
@@ -97,21 +97,21 @@ ${currencyColumns}
     }
 
     // Handle ExchangeRates requests with query string parameters
-    // /ExchangeRates?currencies=USD&years=5
-    // /ExchangeRates?currencies=USD&start=2025-01-01&end=2025-12-31
+    // /ExchangeRates?fx=USD&years=5
+    // /ExchangeRates?fx=USD&start=2025-01-01&end=2025-12-31
     if (url.pathname === '/ExchangeRates' || url.pathname === '/ExchangeRates/') {
-      const currencies = url.searchParams.get('currencies');
+      const currencies = url.searchParams.get('fx');
       const years = url.searchParams.get('years');
       const months = url.searchParams.get('months');
       const weeks = url.searchParams.get('weeks');
       const pathStartDate = url.searchParams.get('start');
       const pathEndDate = url.searchParams.get('end');
 
-      // Require currencies parameter
+      // Require fx parameter
       if (!currencies) {
         return new Response(JSON.stringify({
-          error: 'Missing required parameter: currencies',
-          example: '/ExchangeRates?currencies=USD&years=5'
+          error: 'Missing required parameter: fx',
+          example: '/ExchangeRates?fx=USD&years=5'
         }), {
           status: 400,
           headers: {
@@ -141,10 +141,10 @@ ${currencyColumns}
           error: 'Missing required time period parameter',
           message: 'Must specify one of: years, months, weeks, or start/end dates',
           examples: [
-            '/ExchangeRates?currencies=USD&years=5',
-            '/ExchangeRates?currencies=USD&months=6',
-            '/ExchangeRates?currencies=USD&weeks=4',
-            '/ExchangeRates?currencies=USD&start=2025-01-01&end=2025-12-31'
+            '/ExchangeRates?fx=USD&years=5',
+            '/ExchangeRates?fx=USD&months=6',
+            '/ExchangeRates?fx=USD&weeks=4',
+            '/ExchangeRates?fx=USD&start=2025-01-01&end=2025-12-31'
           ]
         }), {
           status: 400,
@@ -155,10 +155,9 @@ ${currencyColumns}
         });
       }
 
-      // Check for padding query parameter (default true for all periods)
-      const paddingQuery = url.searchParams.get('padding');
-      const shouldPad = (paddingQuery !== 'false');
-      const padDays = shouldPad ? 7 : 0;
+      // Check for strict flag (default is to pad with 5 days)
+      const isStrict = url.searchParams.has('strict');
+      const padDays = isStrict ? 0 : 5;
 
       // Calculate explicit date ranges for all period types
       let startDate, endDate;
@@ -186,7 +185,7 @@ ${currencyColumns}
         startDate.setFullYear(startDate.getFullYear() - 5);
       }
 
-      // Apply padding to start date (7 days before)
+      // Apply padding to start date (5 days before)
       if (padDays > 0) {
         startDate.setDate(startDate.getDate() - padDays);
       }
@@ -280,9 +279,13 @@ ${properties.join('\n')}
 ${entriesXml}
 </feed>`;
 
+        // Check for raw flag to enable browser viewing
+        const isRaw = url.searchParams.has('raw');
+        const contentType = isRaw ? 'text/xml' : 'application/atom+xml;type=feed';
+
         return new Response(atomFeed, {
           headers: {
-            'Content-Type': 'application/atom+xml;type=feed',
+            'Content-Type': contentType,
             'Access-Control-Allow-Origin': '*',
             'DataServiceVersion': '2.0'
           }
@@ -304,12 +307,12 @@ ${entriesXml}
     // 404 for all other paths
     return new Response(JSON.stringify({
       error: 'Not Found',
-      message: 'Valid endpoints: / (service document), /$metadata, /ExchangeRates?currencies=USD&years=5',
+      message: 'Valid endpoints: / (service document), /$metadata, /ExchangeRates?fx=USD&years=5',
       examples: [
-        '/ExchangeRates?currencies=USD&years=5',
-        '/ExchangeRates?currencies=USD,EUR&months=6',
-        '/ExchangeRates?currencies=USD&weeks=4',
-        '/ExchangeRates?currencies=USD&start=2025-01-01&end=2025-12-31'
+        '/ExchangeRates?fx=USD&years=5',
+        '/ExchangeRates?fx=USD,EUR&months=6',
+        '/ExchangeRates?fx=USD&weeks=4',
+        '/ExchangeRates?fx=USD&start=2025-01-01&end=2025-12-31'
       ]
     }), {
       status: 404,
