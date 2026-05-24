@@ -6,8 +6,8 @@
   "main": "exchange-rate-worker.js",
   "scripts": {
     "deploy": "wrangler deploy",
-    "deploy:local": "wrangler deploy --config wrangler.local.toml",
-    "dev": "wrangler dev --config wrangler.local.toml",
+    "deploy:local": "wrangler deploy --config wrangler.local.jsonc",
+    "dev": "wrangler dev --config wrangler.local.jsonc",
     "test": "vitest run"
   },
   "keywords": [

@@ -2,11 +2,13 @@
 
 **OData Valet** serves an `OData` feed of CAD exchange rate data for use in Excel.
 
-The Bank of Canada [Valet API][Valet] provides exchange rate data in `JSON` and `XML` but these formats are not directly supported in all versions of Excel. OData Valet makes it easier to use Valet API data in Excel:
+### Why `OData`?
 
-- converts `JSON` data to [`OData`][Atom]
+The Bank of Canada [Valet API][Valet] provides exchange rate data in `JSON`, `CSV`, and `XML`, but the Excel `OData` import flow gives users a refreshable table from a URL without shaping API data in Power Query. **OData Valet** makes it easier to use Valet API data in Excel:
+
+- converts Bank of Canada data to [`OData`][Atom]
 - includes service discovery for ease of use
-- avoid Power Queries Editor
+- avoids Power Query Editor
 - supports clear `XLOOKUP` formulas
 
 ### Add Exchange Rate Data to Excel
@@ -17,7 +19,7 @@ The Bank of Canada [Valet API][Valet] provides exchange rate data in `JSON` and 
       <a href="https://odatavalet.andrewe.ca">
          odatavalet.andrewe.ca
       </a>
-   <li>select: Get Data → Odata
+   <li>select: Get Data → <code>OData</code>
    <li>paste your URL
    <li>select: Close and load
    <li>use <code>XLOOKUP</code> to find rates by date<br />
@@ -29,10 +31,10 @@ The Bank of Canada [Valet API][Valet] provides exchange rate data in `JSON` and 
 Use `XLOOKUP` in your exchange rate formulas. Example rate when converting USD to CAD:
 
 ```excel
-=XLOOKUP(A2, Query[Date], Query[USD_CAD], 0.0000, -1)
+=XLOOKUP(A1, Query[Date], Query[USD_CAD], 0.0000, -1)
 ```
 
-- date in cell: `A2` <br /><small>**OR**</small><br />dates in column: `INDEX(A:A,ROW())`
+- date in cell: `A1` <br /><small>**OR**</small><br />dates in column: `INDEX(A:A,ROW())`
 - imported table: `Query`
    - date column: `[Date]`
    - exchange rate column: `[USD_CAD]`
@@ -41,7 +43,7 @@ Use `XLOOKUP` in your exchange rate formulas. Example rate when converting USD t
 
 ### Excel Table Structure
 
-The OData feed automatically imports (and can sync) a new `Query` worksheet and table. Example:
+The `OData` feed automatically imports (and can sync) a new `Query` worksheet and table. Example:
 
 | Id | Date | USD_CAD | CAD_USD |
 |----|------|---------|---------|
@@ -49,7 +51,7 @@ The OData feed automatically imports (and can sync) a new `Query` worksheet and 
 | 2  | <nobr>2025-01-02</nobr> | 1.2344  | 0.8101 |
 | 3  | <nobr>2025-01-03</nobr> | 1.2343  | 0.8102 |
 
-## OData Feed URL: [odatavalet.andrewe.ca][public]
+## `OData` Feed URL: [odatavalet.andrewe.ca][public]
 
 **base url & path**: [`odatavalet.andrewe.ca`][public]
 

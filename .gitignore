@@ -2,6 +2,7 @@
 .wrangler/
 wrangler.toml.local
 wrangler.local.toml
+wrangler.local.jsonc
 .dev.vars
 .mf/
 worker-configuration.d.ts
