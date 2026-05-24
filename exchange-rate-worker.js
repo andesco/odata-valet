@@ -291,9 +291,9 @@ ${entriesXml}
           }
         });
       } catch (error) {
+        console.error(error);
         return new Response(JSON.stringify({
-          error: error.message,
-          stack: error.stack
+          error: 'Internal server error'
         }), {
           status: 500,
           headers: {
