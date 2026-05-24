@@ -8,7 +8,7 @@
   <style>
     .currency-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(8em, 1fr));
       gap: 0.5rem;
     }
     .currency-grid label {
@@ -29,16 +29,68 @@
       font-size: 1.25rem;
       font-weight: bold;
     }
+    .formula-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+      gap: 1rem;
+      align-items: start;
+    }
+    .formula-options fieldset {
+      margin-top: 0;
+    }
     input[type="date"] {
       width: auto;
       display: inline-block;
+    }
+    summary {
+      display: flex;
+      gap: 0.25rem;
+      align-items: center;
+    }
+    .formula-row {
+      display: grid;
+      grid-template-columns: minmax(6rem, 8em) minmax(0, 1fr) auto;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .formula-label {
+      color: var(--pico-muted-color);
+    }
+    .formula-row code {
+      align-items: center;
+      display: flex;
+      min-height: 2rem;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    button.copy-formula {
+      align-items: center;
+      display: inline-flex;
+      height: 2rem;
+      justify-content: center;
+      line-height: 1;
+      margin: 0;
+      padding: 0 0.75rem;
+      width: 4.5rem;
+    }
+    #copyBtn {
+      width: 7rem;
+    }
+    button.copied {
+      --pico-background-color: #16803c;
+      --pico-border-color: #16803c;
+      --pico-color: #fff;
+      background-color: #16803c !important;
+      border-color: #16803c !important;
+      color: #fff !important;
     }
   </style>
 </head>
 <body>
   <main class="container">
     <h1>OData Valet</h1>
-    <h4>Bank of Canada Exchange Rate Data for Excel</h4>
+    <h4>Bank of Canada Exchange Rate Data in Excel</h4>
     
     <small>
       source code: <a href="https://github.com/andesco/odata-valet">andesco/odata-valet</a><br />
@@ -49,56 +101,72 @@
       <fieldset>
         <legend>Currencies</legend>
         <div class="currency-grid">
-          <label><input type="checkbox" name="currency" value="AUD"> <span>AUD</span></label>
-          <label><input type="checkbox" name="currency" value="BRL"> <span>BRL</span></label>
-          <label><input type="checkbox" name="currency" value="CAD"> <span>CAD</span></label>
-          <label><input type="checkbox" name="currency" value="CHF"> <span>CHF</span></label>
-          <label><input type="checkbox" name="currency" value="CNY"> <span>CNY</span></label>
           <label><input type="checkbox" name="currency" value="EUR" checked> <span>EUR</span></label>
           <label><input type="checkbox" name="currency" value="GBP" checked> <span>GBP</span></label>
-          <label><input type="checkbox" name="currency" value="HKD"> <span>HKD</span></label>
-          <label><input type="checkbox" name="currency" value="IDR"> <span>IDR</span></label>
-          <label><input type="checkbox" name="currency" value="INR"> <span>INR</span></label>
-          <label><input type="checkbox" name="currency" value="JPY"> <span>JPY</span></label>
-          <label><input type="checkbox" name="currency" value="KRW"> <span>KRW</span></label>
-          <label><input type="checkbox" name="currency" value="MXN"> <span>MXN</span></label>
-          <label><input type="checkbox" name="currency" value="MYR"> <span>MYR</span></label>
-          <label><input type="checkbox" name="currency" value="NOK"> <span>NOK</span></label>
-          <label><input type="checkbox" name="currency" value="NZD"> <span>NZD</span></label>
-          <label><input type="checkbox" name="currency" value="PEN"> <span>PEN</span></label>
-          <label><input type="checkbox" name="currency" value="RUB"> <span>RUB</span></label>
-          <label><input type="checkbox" name="currency" value="SAR"> <span>SAR</span></label>
-          <label><input type="checkbox" name="currency" value="SEK"> <span>SEK</span></label>
-          <label><input type="checkbox" name="currency" value="SGD"> <span>SGD</span></label>
-          <label><input type="checkbox" name="currency" value="THB"> <span>THB</span></label>
-          <label><input type="checkbox" name="currency" value="TRY"> <span>TRY</span></label>
-          <label><input type="checkbox" name="currency" value="TWD"> <span>TWD</span></label>
           <label><input type="checkbox" name="currency" value="USD" checked> <span>USD</span></label>
-          <label><input type="checkbox" name="currency" value="VND"> <span>VND</span></label>
-          <label><input type="checkbox" name="currency" value="ZAR"> <span>ZAR</span></label>
+          <details style="grid-column: 1 / -1; margin-top: -0.5rem;">
+            <summary>other currencies</summary>
+            <div class="currency-grid" style="margin-top: 1rem;">
+              <label><input type="checkbox" name="currency" value="AUD"> <span>AUD</span></label>
+              <label><input type="checkbox" name="currency" value="BRL"> <span>BRL</span></label>
+              <label><input type="checkbox" name="currency" value="CHF"> <span>CHF</span></label>
+              <label><input type="checkbox" name="currency" value="CNY"> <span>CNY</span></label>
+              <label><input type="checkbox" name="currency" value="HKD"> <span>HKD</span></label>
+              <label><input type="checkbox" name="currency" value="IDR"> <span>IDR</span></label>
+              <label><input type="checkbox" name="currency" value="INR"> <span>INR</span></label>
+              <label><input type="checkbox" name="currency" value="JPY"> <span>JPY</span></label>
+              <label><input type="checkbox" name="currency" value="KRW"> <span>KRW</span></label>
+              <label><input type="checkbox" name="currency" value="MXN"> <span>MXN</span></label>
+              <label><input type="checkbox" name="currency" value="MYR"> <span>MYR</span></label>
+              <label><input type="checkbox" name="currency" value="NOK"> <span>NOK</span></label>
+              <label><input type="checkbox" name="currency" value="NZD"> <span>NZD</span></label>
+              <label><input type="checkbox" name="currency" value="PEN"> <span>PEN</span></label>
+              <label><input type="checkbox" name="currency" value="RUB"> <span>RUB</span></label>
+              <label><input type="checkbox" name="currency" value="SAR"> <span>SAR</span></label>
+              <label><input type="checkbox" name="currency" value="SEK"> <span>SEK</span></label>
+              <label><input type="checkbox" name="currency" value="SGD"> <span>SGD</span></label>
+              <label><input type="checkbox" name="currency" value="THB"> <span>THB</span></label>
+              <label><input type="checkbox" name="currency" value="TRY"> <span>TRY</span></label>
+              <label><input type="checkbox" name="currency" value="TWD"> <span>TWD</span></label>
+              <label><input type="checkbox" name="currency" value="VND"> <span>VND</span></label>
+              <label><input type="checkbox" name="currency" value="ZAR"> <span>ZAR</span></label>
+            </div>
+          </details>
         </div>
       </fieldset>
 
       <fieldset>
         <legend>Period</legend>
-        <label style="display: flex; align-items: baseline; gap: 0.5rem;">
-          <input type="radio" name="periodType" value="years"> Number of Years
-          <input type="number" id="yearsCount" value="1" min="1" max="10" style="width: 100px;">
-        </label>
-
-        <label style="display: flex; align-items: baseline; gap: 0.5rem;">
-          <input type="radio" name="periodType" value="months"> Number of Months
-          <input type="number" id="monthsCount" value="6" min="1" max="120" style="width: 100px; display: none;">
-        </label>
-
-        <label style="display: flex; align-items: baseline; gap: 0.5rem;">
-          <input type="radio" name="periodType" value="weeks"> Number of Weeks
-          <input type="number" id="weeksCount" value="4" min="1" max="520" style="width: 100px; display: none;">
-        </label>
-
-        <div>
+        <div style="min-height: 3rem; margin-bottom: 0.5rem;">
           <label>
-            <input type="radio" name="periodType" value="dateRange" checked> Start &amp; End Dates
+            <input type="radio" name="periodType" value="years"> years
+          </label>
+          <div style="margin-left: 2rem; margin-top: 0.5rem;">
+            <input type="number" id="yearsCount" value="1" min="1" max="10" style="width: 80px;">
+          </div>
+        </div>
+
+        <div style="min-height: 3rem; margin-bottom: 0.5rem;">
+          <label>
+            <input type="radio" name="periodType" value="months"> months
+          </label>
+          <div style="margin-left: 2rem; margin-top: 0.5rem;">
+            <input type="number" id="monthsCount" value="6" min="1" max="120" style="width: 80px;">
+          </div>
+        </div>
+
+        <div style="min-height: 3rem; margin-bottom: 0.5rem;">
+          <label>
+            <input type="radio" name="periodType" value="weeks"> weeks
+          </label>
+          <div style="margin-left: 2rem; margin-top: 0.5rem;">
+            <input type="number" id="weeksCount" value="4" min="1" max="520" style="width: 80px;">
+          </div>
+        </div>
+
+        <div style="min-height: 3rem;">
+          <label>
+            <input type="radio" name="periodType" value="dateRange" checked> start &amp; end dates
           </label>
           <div id="dateRangeOptions" style="margin-left: 2rem; margin-top: 0.5rem;">
             <input type="date" id="startDate">
@@ -117,31 +185,47 @@
         <code id="generatedUrl"></code>
         <footer>
           <button type="button" id="copyBtn">Copy URL</button>
-          <a id="viewOdataLink" href="" target="_blank" role="button" class="secondary" style="margin-left: 1rem;">View XML</a>
+          <a id="viewOdataLink" href="" target="_blank" role="button" class="outline secondary" style="margin-left: 1rem;" title="appends &raw flag; opens XML preview">View XML</a>
         </footer>
       </article>
     </form>
 
-      <h5>How to use in Excel</h5>
+      <h4>Excel Formulas</h4>
       <ol>
         <li>select: Get Data &rarr; OData</li>
         <li>paste your URL</li>
-        <li>select: Close and load</li>
-        <li>use <code>XLOOKUP</code> to find rates by date:</li>
+        <li>select <strong>Close &amp; Load To…</strong> and name the table: <code id="tableNameDisplay">Rates</code></li>
+        <li>use <code>XLOOKUP</code> to find rates by date.</li>
       </ol>
-      <details open>
-      <p><summary><code>=XLOOKUP(A2, Query[Date], Query[USD_CAD], 0.0000, -1)</code></summary></p>
-      <ul>
-        <li>date cell: <code>A2</code> <small><strong>OR</strong></small> <code>INDEX(A:A,ROW())</code></li>
-        <li>imported table name: <code>Query</code></li>
-        <li>date column: <code>[Date]</code></li>
-        <li>exchange rate column: <code>[USD_CAD]</code></li>
-        <li>returned value when no match found: <code>0.0000</code></li>
-        <li>find previous business day: <code>-1</code></li>
-      </ul>
-      </details>
+
+      <div class="formula-options">
+        <fieldset>
+          <legend>Excel Table Name</legend>
+          <input type="text" id="connectionName" value="Rates" placeholder="Rates" style="max-width: 12rem;">
+        </fieldset>
+
+        <fieldset>
+          <legend>Date Cell Reference</legend>
+          <label>
+            <input type="radio" name="dateReference" value="A1" checked>
+            <code>A1</code>
+          </label>
+          <label>
+            <input type="radio" name="dateReference" value="INDEX(A:A,ROW())">
+            <code>INDEX(A:A,ROW())</code>
+          </label>
+        </fieldset>
+      </div>
+
+      <article id="formulasOutput" style="display:none;">
+        <header>Formulas:</header>
+        <div id="formulasList"></div>
+        <footer><small>Use <code>A1</code> for formulas copied from the first data row or <code>INDEX(A:A,ROW())</code> for a whole-column formula.</small></footer>
+      </article>
   </main>
-  <script>
+  <script type="module">
+    import { escapeHtml, buildFormula } from './formulas.js';
+
     const form = document.getElementById('urlBuilder');
     const urlDisplay = document.getElementById('generatedUrl');
     const copyBtn = document.getElementById('copyBtn');
@@ -149,6 +233,7 @@
     const monthsCount = document.getElementById('monthsCount');
     const weeksCount = document.getElementById('weeksCount');
     const dateRangeOptions = document.getElementById('dateRangeOptions');
+    const connectionNameInput = document.getElementById('connectionName');
 
     // Toggle period type visibility
     function updatePeriodVisibility() {
@@ -174,12 +259,17 @@
       radio.addEventListener('change', (e) => {
         updatePeriodVisibility();
         updateUrl();
+        updateFormulas();
       });
     });
 
     // Update URL on any input change
-    form.addEventListener('change', updateUrl);
-    form.addEventListener('input', updateUrl);
+    form.addEventListener('change', () => { updateUrl(); updateFormulas(); });
+    form.addEventListener('input', () => { updateUrl(); updateFormulas(); });
+    connectionNameInput.addEventListener('input', updateFormulas);
+    document.querySelectorAll('input[name="dateReference"]').forEach(radio => {
+      radio.addEventListener('change', updateFormulas);
+    });
 
     function updateUrl() {
       const currencies = Array.from(document.querySelectorAll('input[name="currency"]:checked'))
@@ -227,12 +317,87 @@
       viewLink.href = baseUrl + '&raw';
     }
 
+    function updateFormulas() {
+      const currencies = Array.from(document.querySelectorAll('input[name="currency"]:checked'))
+        .map(cb => cb.value);
+      const tableName = (connectionNameInput.value || 'Rates').trim();
+      const dateReference = document.querySelector('input[name="dateReference"]:checked').value;
+      const formulasOutput = document.getElementById('formulasOutput');
+      const formulasList = document.getElementById('formulasList');
+      const tableNameDisplay = document.getElementById('tableNameDisplay');
+
+      if (tableNameDisplay) tableNameDisplay.textContent = tableName;
+
+      if (currencies.length === 0) {
+        formulasOutput.style.display = 'none';
+        return;
+      }
+
+      formulasOutput.style.display = '';
+
+      const rows = currencies.flatMap(curr => [
+        { label: `${curr} → CAD`, col: `${curr}_CAD` },
+        { label: `CAD → ${curr}`, col: `CAD_${curr}` },
+      ]).map(({ label, col }) => {
+        const formula = buildFormula(tableName, col, dateReference);
+        const safeFormula = escapeHtml(formula);
+        return `<div class="formula-row">
+      <span class="formula-label">${label}</span>
+      <code style="flex:1;">${safeFormula}</code>
+      <button type="button" class="copy-formula outline secondary" data-formula="${safeFormula}">Copy</button>
+    </div>`;
+      });
+
+      formulasList.innerHTML = rows.join('');
+
+      formulasList.querySelectorAll('.copy-formula').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          showCopied(btn, 'Copy');
+          try {
+            await copyText(btn.dataset.formula);
+          } catch {
+            alert('Failed to copy formula');
+          }
+        });
+      });
+    }
+
+    function showCopied(button, resetText) {
+      clearTimeout(button.resetCopiedTimer);
+      button.textContent = '✓';
+      button.classList.add('copied');
+      button.resetCopiedTimer = setTimeout(() => {
+        button.textContent = resetText;
+        button.classList.remove('copied');
+      }, 1500);
+    }
+
+    async function copyText(text) {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        return;
+      }
+
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.setAttribute('readonly', '');
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      const copied = document.execCommand('copy');
+      textarea.remove();
+
+      if (!copied) {
+        throw new Error('Copy command failed');
+      }
+    }
+
     // Copy to clipboard
     copyBtn.addEventListener('click', async () => {
+      showCopied(copyBtn, 'Copy URL');
       try {
-        await navigator.clipboard.writeText(urlDisplay.textContent);
-        copyBtn.textContent = 'Copied!';
-        setTimeout(() => copyBtn.textContent = 'Copy URL', 2000);
+        await copyText(urlDisplay.textContent);
       } catch (err) {
         alert('Failed to copy URL');
       }
@@ -247,6 +412,7 @@
     // Initialize
     updatePeriodVisibility();
     updateUrl();
+    updateFormulas();
   </script>
 </body>
 </html>
